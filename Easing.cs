@@ -1,12 +1,8 @@
-﻿using EasingLIB;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace EasingLIB
+using EasingSharp;
+using System.Diagnostics;
+namespace EasingSharp
 {
     public static class EasingAction
     {
@@ -367,7 +363,7 @@ public static class Easing
         public EasingNotFoundException()
             : base("イージングが存在しません。")
         {
-        
+
         }
         /// <summary>
         /// メッセージ文字列を渡すコンストラクタ
@@ -376,7 +372,7 @@ public static class Easing
         public EasingNotFoundException(string message)
             : base(message)
         {
-           
+
         }
         /// <summary>
         /// メッセージ文字列と発生済み例外オブジェクトを渡すコンストラクタ
@@ -386,37 +382,38 @@ public static class Easing
         public EasingNotFoundException(string message, Exception innerException)
             : base(message, innerException)
         {
-          
+
         }
     }
-    public static void Run(Action<double> callback,string easing, double start, double end, int time)
+    public static void Run(Action<double> callback, string easing, double start, double end, int time)
     {
         Easings eas;
-        if(TryParse(easing, out eas))
+        if (TryParse(easing, out eas))
         {
             Run(callback, eas, start, end, time);
         }
         else
         {
-            throw new EasingNotFoundException("イージング '"+easing+"'が見つかりません。");
+            throw new EasingNotFoundException("イージング '" + easing + "'が見つかりません。");
         }
     }
     public static void Run(Action<double> callback, Easings easing, double start, double end, int time)
     {
-        Control threadcontrol = new Control();
-        var hand = threadcontrol.Handle;
+        
+       
         var task = Task.Run(() =>
         {
-
-            double nextframe = (double)System.Environment.TickCount;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            double nextframe = (double)stopwatch.ElapsedMilliseconds;
             double wait = 1000 / 60;
-            int starttick = System.Environment.TickCount;
-            while (System.Environment.TickCount - starttick <= time)
+            int starttick = (int)stopwatch.ElapsedMilliseconds;
+            while (stopwatch.ElapsedMilliseconds - starttick <= time)
             {
-                if ((double)System.Environment.TickCount >= nextframe)
+                if ((double)stopwatch.ElapsedMilliseconds >= nextframe)
                 {
 
-                    float x = ((float)System.Environment.TickCount - starttick) / time;
+                    float x = ((float)stopwatch.ElapsedMilliseconds - starttick) / time;
                     if (x > 1)
                     {
                         x = 1;
@@ -424,6 +421,7 @@ public static class Easing
                     double eas = 0;
                     if (easing == Easings.Liner)
                     {
+
                         eas = EasingAction.Liner(x);
                     }
                     else if (easing == Easings.easeInSine)
@@ -547,7 +545,8 @@ public static class Easing
                         eas = EasingAction.easeInOutBounce(x);
                     }
 
-                    threadcontrol.Invoke((Action)(() => { callback(start + (eas * (end - start))); }));
+                    //threadcontrol.Invoke((Action)(() => { callback(start + (eas * (end - start))); }));
+                    callback(start + (eas * (end - start)));
                     nextframe += wait;
 
 
@@ -557,10 +556,10 @@ public static class Easing
 
 
             }
+            callback(end);
         });
 
 
 
     }
 }
-
