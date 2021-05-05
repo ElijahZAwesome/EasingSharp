@@ -6,9 +6,17 @@ namespace EasingSharp
 {
     public static class Easing
     {
-        public static void Ease(Action<double> callback, EasingTypes easing, double start, double end, int time)
+        /// <summary>
+        /// Asynchronously ease between two values and run a callback on each step.
+        /// </summary>
+        /// <param name="callback">The callback to run on each tick</param>
+        /// <param name="easing">The type of easing to apply.</param>
+        /// <param name="start">The starting value of the ease</param>
+        /// <param name="end">The ending value of the ease (will always be sent at the end of the ease)</param>
+        /// <param name="time">How long, in milliseconds, to perform the ease.</param>
+        public static async Task Ease(Action<double> callback, EasingTypes easing, double start, double end, int time)
         {
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
