@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace EasingSharp
 {
@@ -41,14 +41,14 @@ namespace EasingSharp
         public static double EaseInOutQuint(float x) =>
             x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.Pow(-2 * x + 2, 5) / 2;
 
-        public static double EaseInExpo(float x) => x == 0 ? 0 : Math.Pow(2, 10 * x - 10);
+        public static double EaseInExpo(float x) => x <= 0 ? 0 : Math.Pow(2, 10 * x - 10);
 
-        public static double EaseOutExpo(float x) => x == 1 ? 1 : 1 - Math.Pow(2, -10 * x);
+        public static double EaseOutExpo(float x) => x >= 1 ? 1 : 1 - Math.Pow(2, -10 * x);
 
         public static double EaseInOutExpo(float x) =>
-            x == 0
+            x <= 0
                 ? 0
-                : x == 1
+                : x >= 1
                     ? 1
                     : x < 0.5
                         ? Math.Pow(2, 20 * x - 10) / 2
